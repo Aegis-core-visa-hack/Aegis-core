@@ -216,7 +216,7 @@ Key requirements from PS4:
 | Agent 1 (Reg Monitor) | Backend | ❌ Not started |
 | Agent 2 (Compliance Tracker) | Backend | ❌ Not started |
 | Risk Heatmap | UI Agent | ✅ **Built** |
-| 2D Heatmap (Criticality × Due Date) | Backend + UI | ❌ Not started |
+| 2D Heatmap (Criticality × Due Date) | Backend + UI | ✅ **Built** |
 
 ### P2 - Nice to Have
 | Feature | Owner | Status |

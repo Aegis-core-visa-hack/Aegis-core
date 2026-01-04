@@ -2,6 +2,7 @@
 from fastapi import APIRouter
 
 from mock_data import dashboard_summary, agents, risk_heatmap, alerts
+from priority_matrix import get_priority_matrix
 
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
@@ -41,3 +42,9 @@ async def get_agent_activity():
             },
         }
     }
+
+
+@router.get("/priority-matrix")
+async def get_priority_matrix_endpoint():
+    """Get 2D priority matrix (Criticality × Due Date)"""
+    return {"data": get_priority_matrix()}

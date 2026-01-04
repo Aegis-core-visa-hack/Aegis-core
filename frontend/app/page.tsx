@@ -6,31 +6,51 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { RiskHeatmap } from "@/components/dashboard/RiskHeatmap";
 import { AlertList } from "@/components/dashboard/AlertList";
 import { AgentStatus } from "@/components/dashboard/AgentStatus";
+import { PriorityMatrix } from "@/components/dashboard/PriorityMatrix";
 import { dashboardApi, Alert, Agent, RiskHeatmapItem, DashboardSummary } from "@/lib/api";
 import { mockDashboard, mockAlerts, mockRiskHeatmap } from "@/lib/mockData";
+
+// Mock priority matrix data for fallback
+const mockPriorityMatrix = {
+  matrix: {
+    critical: { overdue: [{ id: "ALT-001", title: "Transaction anomaly", entity: "MID-4521", severity: "critical", due: "overdue", due_date: "2026-01-03" }], this_week: [{ id: "ALT-002", title: "PAN in log", entity: "MID-4521", severity: "critical", due: "this_week", due_date: "2026-01-08" }], this_month: [], later: [] },
+    high: { overdue: [], this_week: [{ id: "ALT-003", title: "Bank cert expiring", entity: "BNK-1234", severity: "high", due: "this_week", due_date: "2026-01-10" }], this_month: [{ id: "ISS-001", title: "GDPR update", entity: "BNK-5678", severity: "high", due: "this_month", due_date: "2026-01-25" }], later: [] },
+    medium: { overdue: [], this_week: [{ id: "ALT-004", title: "GDPR review", entity: null, severity: "medium", due: "this_week", due_date: "2026-01-09" }], this_month: [{ id: "ISS-002", title: "Vendor review", entity: "VND-456", severity: "medium", due: "this_month", due_date: "2026-01-20" }], later: [{ id: "ISS-003", title: "Policy update", entity: null, severity: "medium", due: "later", due_date: "2026-02-15" }] },
+    low: { overdue: [], this_week: [], this_month: [{ id: "ISS-005", title: "Audit prep", entity: null, severity: "low", due: "this_month", due_date: "2026-01-28" }], later: [{ id: "ISS-004", title: "Training", entity: "BNK-9012", severity: "low", due: "later", due_date: "2026-03-01" }] },
+  },
+  summary: { total_issues: 9, overdue: 1, critical_overdue: 1, needs_attention: 4 },
+};
+
+interface PriorityMatrixData {
+  matrix: typeof mockPriorityMatrix.matrix;
+  summary: typeof mockPriorityMatrix.summary;
+}
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [heatmap, setHeatmap] = useState<RiskHeatmapItem[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [priorityMatrix, setPriorityMatrix] = useState<PriorityMatrixData | null>(null);
   const [loading, setLoading] = useState(true);
   const [useApi, setUseApi] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [summaryRes, alertsRes, heatmapRes, agentsRes] = await Promise.all([
+        const [summaryRes, alertsRes, heatmapRes, agentsRes, matrixRes] = await Promise.all([
           dashboardApi.getSummary(),
           dashboardApi.getRecentAlerts(5),
           dashboardApi.getRiskHeatmap(),
           dashboardApi.getAgentActivity(),
+          fetch('http://localhost:8000/api/dashboard/priority-matrix').then(r => r.json()),
         ]);
 
         setSummary(summaryRes.data);
         setAlerts(alertsRes.data.alerts);
         setHeatmap(heatmapRes.data.regulations);
         setAgents(agentsRes.data.agents);
+        setPriorityMatrix(matrixRes.data);
         setUseApi(true);
       } catch (error) {
         console.error("API unavailable, using mock data:", error);
@@ -59,6 +79,7 @@ export default function Dashboard() {
     description: "",
     status: a.status as Agent["status"]
   }));
+  const displayPriorityMatrix = priorityMatrix || mockPriorityMatrix;
 
   if (loading) {
     return (
@@ -123,9 +144,10 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Risk Heatmap */}
-        <div className="mb-8">
+        {/* Two Heatmaps Side by Side */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
           <RiskHeatmap data={displayHeatmap} />
+          <PriorityMatrix data={displayPriorityMatrix} />
         </div>
 
         {/* Two Column Layout: Alerts + Agent Status */}
