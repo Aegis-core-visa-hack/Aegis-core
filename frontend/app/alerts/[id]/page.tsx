@@ -1,10 +1,14 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Header } from "@/components/layout/Header";
 import { Badge } from "@/components/ui/badge";
 import { AlertActions } from "@/components/alerts/AlertActions";
+import { alertsApi, AlertDetail as AlertDetailType } from "@/lib/api";
 import { mockAlertDetail, mockAlerts } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
-import { notFound } from 'next/navigation';
 
 const severityStyles = {
     critical: 'bg-red-500/20 text-red-400 border-red-500/50',
@@ -13,46 +17,108 @@ const severityStyles = {
     low: 'bg-blue-500/20 text-blue-400 border-blue-500/50',
 };
 
-export default async function AlertDetailPage({
-    params
-}: {
-    params: Promise<{ id: string }>
-}) {
-    const { id } = await params;
+export default function AlertDetailPage() {
+    const params = useParams();
+    const id = params.id as string;
 
-    // In real app, fetch from API. For now, use mock data
-    const alert = id === 'ALT-002' ? mockAlertDetail : mockAlerts.find(a => a.id === id);
+    const [detail, setDetail] = useState<AlertDetailType | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [useApi, setUseApi] = useState(true);
+    const [notFound, setNotFound] = useState(false);
 
-    if (!alert) {
-        notFound();
+    useEffect(() => {
+        async function fetchAlertDetail() {
+            try {
+                const res = await alertsApi.getDetail(id);
+                setDetail(res.data);
+                setUseApi(true);
+            } catch (error) {
+                console.error("API unavailable, using mock data:", error);
+                // Fall back to mock data
+                const mockAlert = id === 'ALT-002' ? mockAlertDetail : mockAlerts.find(a => a.id === id);
+                if (!mockAlert) {
+                    setNotFound(true);
+                } else {
+                    const fallbackDetail: AlertDetailType = id === 'ALT-002'
+                        ? mockAlertDetail as AlertDetailType
+                        : {
+                            ...mockAlert,
+                            evidence: `Alert ${id} triggered at ${mockAlert.timestamp}`,
+                            recommendations: [
+                                "Review the alert details",
+                                "Investigate the root cause",
+                                "Take appropriate action"
+                            ],
+                            context: {
+                                similar_violations: 1,
+                                entity_name: mockAlert.entity_id || 'Unknown',
+                                entity_volume: 'N/A'
+                            }
+                        } as AlertDetailType;
+                    setDetail(fallbackDetail);
+                }
+                setUseApi(false);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchAlertDetail();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background">
+                <Header />
+                <main className="container max-w-screen-2xl px-4 py-8">
+                    <div className="flex items-center justify-center h-[60vh]">
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                            <p className="text-muted-foreground">Loading alert details...</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        );
     }
 
-    const detail = id === 'ALT-002' ? mockAlertDetail : {
-        ...alert,
-        evidence: `Alert ${id} triggered at ${alert.timestamp}`,
-        recommendations: [
-            "Review the alert details",
-            "Investigate the root cause",
-            "Take appropriate action"
-        ],
-        context: {
-            similar_violations: 1,
-            entity_name: alert.entity_id || 'Unknown',
-            entity_volume: 'N/A'
-        }
-    };
+    if (notFound || !detail) {
+        return (
+            <div className="min-h-screen bg-background">
+                <Header />
+                <main className="container max-w-screen-2xl px-4 py-8">
+                    <Link
+                        href="/alerts"
+                        className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6"
+                    >
+                        ← Back to Alerts
+                    </Link>
+                    <div className="text-center py-16">
+                        <h1 className="text-2xl font-bold mb-2">Alert Not Found</h1>
+                        <p className="text-muted-foreground">The alert {id} could not be found.</p>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background">
             <Header />
             <main className="container max-w-screen-2xl px-4 py-8">
                 {/* Back link */}
-                <Link
-                    href="/alerts"
-                    className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6"
-                >
-                    ← Back to Alerts
-                </Link>
+                <div className="flex items-center justify-between mb-6">
+                    <Link
+                        href="/alerts"
+                        className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+                    >
+                        ← Back to Alerts
+                    </Link>
+                    {!useApi && (
+                        <span className="text-xs px-2 py-1 bg-yellow-500/10 text-yellow-500 rounded-md">
+                            Demo Mode
+                        </span>
+                    )}
+                </div>
 
                 {/* Alert header */}
                 <div className="mb-8">
