@@ -1,63 +1,59 @@
-import Image from "next/image";
+import { Header } from "@/components/layout/Header";
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { RiskHeatmap } from "@/components/dashboard/RiskHeatmap";
+import { AlertList } from "@/components/dashboard/AlertList";
+import { AgentStatus } from "@/components/dashboard/AgentStatus";
+import { mockDashboard, mockAlerts, mockRiskHeatmap } from "@/lib/mockData";
 
-export default function Home() {
+export default function Dashboard() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container max-w-screen-2xl px-4 py-8">
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Command Center</h1>
+          <p className="text-muted-foreground">
+            Real-time compliance monitoring across your ecosystem
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Metric Cards */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            title="Compliance Score"
+            value={`${mockDashboard.compliance_score}%`}
+            change={mockDashboard.score_change}
+            changeLabel="%"
+            trend={mockDashboard.score_change > 0 ? "up" : "down"}
+          />
+          <MetricCard
+            title="Open Violations"
+            value={mockDashboard.open_violations}
+            change={-5}
+            trend="down"
+          />
+          <MetricCard
+            title="Critical Alerts"
+            value={mockDashboard.critical_alerts}
+            trend="neutral"
+          />
+          <MetricCard
+            title="Agents Online"
+            value={`${mockDashboard.agents.filter(a => a.status === 'online').length}/${mockDashboard.agents.length}`}
+            trend="neutral"
+          />
+        </div>
+
+        {/* Risk Heatmap */}
+        <div className="mb-8">
+          <RiskHeatmap data={mockRiskHeatmap} />
+        </div>
+
+        {/* Two Column Layout: Alerts + Agent Status */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <AlertList alerts={mockAlerts.slice(0, 5)} />
+          <AgentStatus agents={mockDashboard.agents} />
         </div>
       </main>
     </div>
