@@ -1,55 +1,73 @@
 # AEGIS - Agent Coordination Document
 ## Cross-Conversation Context for Parallel Development
 
-> **Last Updated:** 2026-01-05 04:48 IST
-> **Active Agents:** Coordinator (this conversation - git/tracking)
-> **Project:** Visa Hackathon PS4 - Agentic AI Compliance Platform
+> **Last Updated:** 2026-01-05 06:05 IST
+> **Active Agents:** Coordinator + All Implementation Agents (Merged)
 > **GitHub:** Aegis-core-visa-hack/Aegis-core
 
 ---
 
 ## 1. CURRENT STATE
 
-### 🎉 MVP STATUS: ~95% COMPLETE
+### 🎉 MVP STATUS: 100% COMPLETE
 
 ### What's Done
-- [x] Problem statement analysis
-- [x] Visa-specific requirements understanding
-- [x] Architecture design (5 agents, shared memory) - **v3 complete**
-- [x] Tech stack decisions
-- [x] UI/UX design decisions
-- [x] Pitch deck materials (in `pitch_materials/`)
-- [x] Technical documentation (`ARCHITECTURE.md` - 94KB)
-- [x] Repository setup (Git init, push to GitHub)
+- [x] Architecture & Planning v3 (5 agents, shared memory)
 - [x] **Frontend** - All 5 pages built, running on localhost:3000
-- [x] **Backend** - FastAPI + all routes + Agent 3 built
+- [x] **Backend** - FastAPI + all 5 agents implemented
+- [x] **Integration** - Full API integration with mock data fallback
+- [x] **Resource Locking** - Self-check system active (`RESOURCE_LOCKS.md`)
 
-### Frontend Progress ✅
-| Page | Status | File |
-|------|--------|------|
-| Dashboard `/` | ✅ Complete | `app/page.tsx` |
-| Alerts List `/alerts` | ✅ Complete | `app/alerts/page.tsx` |
-| Alert Detail `/alerts/[id]` | ✅ Complete | `app/alerts/[id]/page.tsx` |
-| Chat `/chat` | ✅ Complete | `app/chat/page.tsx` |
-| Entities `/entities` | ✅ Complete | `app/entities/page.tsx` |
+### Implementation Status ✅
+| Component | Status | File | Note |
+|-----------|--------|------|------|
+| **Agent 1** (Regulatory) | ✅ Complete | `agents/regulatory_monitor.py` | Regulations & Impact |
+| **Agent 2** (Ecosystem) | ✅ Complete | `agents/ecosystem_tracker.py` | Certs & Risk Score |
+| **Agent 3** (Transaction) | ✅ Complete | `agents/transaction_monitor.py` | PAN Detection |
+| **Agent 4** (Jurisdiction) | ✅ Complete | `agents/cross_jurisdiction.py` | Data Flow Analysis |
+| **Agent 5** (Evidence) | ✅ Complete | `agents/evidence_engine.py` | Reports & Remediation |
+| **2D Heatmap** | ✅ Complete | `PriorityMatrix.tsx` | Criticality × Due Date |
 
-### Backend Progress ✅
-| Component | Status | File |
-|-----------|--------|------|
-| FastAPI App | ✅ Complete | `backend/main.py` |
-| Dashboard API | ✅ Complete | `routes/dashboard.py` |
-| Alerts API | ✅ Complete | `routes/alerts.py` |
-| Entities API | ✅ Complete | `routes/entities.py` |
-| Chat API | ✅ Complete | `routes/chat.py` (Gemini integrated) |
-| Demo API | ✅ Complete | `routes/demo.py` (live scanning) |
-| Agent 3 | ✅ Complete | `agents/transaction_monitor.py` |
-| Mock Data | ✅ Complete | `mock_data.py` |
+### Endpoints (All Verified via Curl)
+- `/api/regulations` (Agent 1)
+- `/api/entities/expiring` (Agent 2)
+- `/api/dashboard/summary` (Agent 3)
+- `/api/jurisdiction/analyze` (Agent 4)
+- `/api/reports/cases` (Agent 5)
 
-### What's Remaining
-- [ ] Full frontend-backend integration (chat works, others use mock)
-- [ ] 2D Heatmap (Criticality × Due Date)
-- [ ] Agent 1, 2 (if time permits)
-- [ ] Demo script polish
+---
+
+## 2. NEXT PHASE INSTRUCTIONS (HANDOFF)
+
+### 🤖 To: SQL Implementation Agent
+**Objective:** Replace in-memory mock data with real PostgreSQL + pgvector.
+1.  **Schema Source:** See `ARCHITECTURE.md` Section 9 (Schema Definitions).
+2.  **Mock Data:** Use `backend/mock_data.py` as the initial seed data.
+3.  **ORM:** Use SQLAlchemy (async) or SQLModel.
+4.  **Migration:** Initialize Alembic (`alembic init alembic`).
+5.  **Tasks:**
+    - [ ] Create `backend/database.py` (connection)
+    - [ ] Create `backend/models.py` (tables)
+    - [ ] Update `backend/agents/*.py` to Query DB instead of mocks
+    - [ ] Ensure `pgvector` extension is enabled for Agent 1 rules
+
+### 🎥 To: Verification Agent
+**Objective:** Record "Day in the Life" demo video proving system functionality.
+1.  **Prerequisites:** Ensure SQL Agent has finished and server is running.
+2.  **Recording:** Use Browser Tool (actions are auto-recorded).
+3.  **Script:**
+    - [ ] **Dashboard:** Show high-level metrics & 2D Heatmap.
+    - [ ] **Alerts:** Click into a Critical Alert (PAN Leak).
+    - [ ] **Chat:** Ask "What regulations affect this transaction?".
+    - [ ] **Entities:** Show expiring certificates status.
+    - [ ] **Resolution:** Resolve the alert and show dashboard update.
+4.  **Artifact:** Create `walkthrough.md` embedding the recorded videos.
+
+### ⚠️ IMPORTANT: RESOURCE LOCKING
+- Check `RESOURCE_LOCKS.md` before restarting servers.
+- If SQL Agent changes DB config, **notify Verification Agent**.
+
+---
 
 ---
 
