@@ -6,6 +6,42 @@
 
 ---
 
+## ⚠️ TESTING PROTOCOL (READ FIRST!)
+
+### DO NOT restart the running servers!
+```
+Frontend: http://localhost:3000 (ALREADY RUNNING - don't touch)
+Backend:  http://localhost:8000 (ALREADY RUNNING - don't restart)
+```
+
+### How Testing Works
+1. **Servers have `--reload` flag** - they auto-detect file changes
+2. When you add/modify files, uvicorn reloads automatically
+3. **NO NEED to run** `python -m uvicorn` yourself
+
+### For Your Testing
+```bash
+# ✅ DO: Use curl to test your endpoints
+curl http://localhost:8000/api/your-endpoint
+
+# ✅ DO: Check Swagger UI
+# Open http://localhost:8000/docs in browser
+
+# ❌ DON'T: Start new server instances
+# ❌ DON'T: Run `npm run dev` or `uvicorn` commands
+```
+
+### If Server Is Down
+Ask the **Coordinator Agent** (this conversation) to restart servers.
+Only ONE agent should manage server lifecycle.
+
+### Browser Testing
+- Use existing browser tabs at localhost:3000
+- Navigate to pages as needed
+- Don't start new dev servers
+
+---
+
 ## FILE OWNERSHIP (NO CONFLICTS)
 
 | Agent Thread | Files to CREATE | Files to MODIFY |
