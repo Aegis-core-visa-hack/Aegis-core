@@ -32,13 +32,31 @@ curl http://localhost:8000/api/your-endpoint
 ```
 
 ### If Server Is Down
-Ask the **Coordinator Agent** (this conversation) to restart servers.
+Ask the **Coordinator Agent** to restart servers.
 Only ONE agent should manage server lifecycle.
 
 ### Browser Testing
 - Use existing browser tabs at localhost:3000
 - Navigate to pages as needed
 - Don't start new dev servers
+
+---
+
+## 🔒 RESOURCE LOCKS (CHECK FIRST!)
+
+**Before using shared resources, check:** `RESOURCE_LOCKS.md`
+
+### Self-Check Protocol:
+1. **Read** `RESOURCE_LOCKS.md`
+2. **Check** if resource is 🟢 FREE or 🔴 LOCKED
+3. **Update** status to LOCKED with your agent name when using
+4. **Update** back to FREE when done
+
+### Shared Resources That Need Locking:
+- `routes/__init__.py` (multiple agents may need to add imports)
+- `agents/__init__.py` (multiple agents may need to add imports)  
+- `main.py` (if adding routers)
+- Browser sessions (for visual testing)
 
 ---
 
