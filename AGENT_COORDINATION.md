@@ -213,15 +213,15 @@ Key requirements from PS4:
 ### P1 - Should Have
 | Feature | Owner | Status |
 |---------|-------|--------|
-| Agent 1 (Reg Monitor) | Backend | ❌ Not started |
-| Agent 2 (Compliance Tracker) | Backend | ❌ Not started |
+| Agent 1 (Reg Monitor) | Backend | ✅ **Complete** |
+| Agent 2 (Compliance Tracker) | Backend | ✅ **Complete** |
 | Risk Heatmap | UI Agent | ✅ **Built** |
 | 2D Heatmap (Criticality × Due Date) | Backend + UI | ✅ **Built** |
 
 ### P2 - Nice to Have
 | Feature | Owner | Status |
 |---------|-------|--------|
-| Agent 4, 5 | Backend | ❌ Not started |
+| Agent 4, 5 | Backend | ✅ **Complete** |
 | PDF Export | Backend | ❌ Not started |
 | Chat Orchestrator (real) | Backend | ❌ Not started |
 
@@ -474,3 +474,185 @@ Conversation ID: 49a7654d-04ea-4602-98f9-ad9791812747
 - **Servers**: Backend on :8000, Frontend on :3000
 - **Remaining P1 items**: 2D Heatmap (Criticality × Due Date)
 - **Demo ready**: All pages functional with real API data
+
+---
+
+## Session Log
+Date: 2026-01-05 05:48
+Agent: Agent 2 (Ecosystem Tracker)
+Conversation ID: fab6d4d7-099b-45b3-858b-9b6f64c60d72
+
+### Context Documents Used
+- [x] ARCHITECTURE.md - Agent 2 specs (lines 402-434)
+- [x] AGENT_COORDINATION.md - MVP scope, file ownership
+- [x] AGENT_IMPLEMENTATION_CONTEXT.md - Agent 2 implementation requirements
+- [x] reference_repo/logic_specs/agent_2_ecosystem.txt - Full logic spec
+
+### What Was Helpful
+- Existing `transaction_monitor.py` pattern made implementation straightforward
+- Mock data in `mock_data.py` already had entity structure
+- Logic specs gave comprehensive risk scoring formula
+
+### Work Completed
+- [x] Created `agents/ecosystem_tracker.py` with:
+  - `get_entity_certifications()` - Get all certs for entity
+  - `check_expiring_certifications()` - Find expiring certs within N days
+  - `calculate_entity_risk()` - 5-factor risk scoring (0-100)
+  - `generate_reminder()` - Notification generation with urgency levels
+  - `update_compliance_status()` - Status updates (demo mode)
+  - `execute_daily_check()` - Daily compliance check summary
+- [x] Extended `routes/entities.py` with 6 new endpoints:
+  - `GET /api/entities/expiring?days=N`
+  - `GET /api/entities/daily-check`
+  - `GET /api/entities/{id}/certifications`
+  - `GET /api/entities/{id}/risk`
+  - `POST /api/entities/{id}/send-reminder`
+  - `POST /api/entities/{id}/update-status`
+- [x] Updated `agents/__init__.py` with optional imports
+
+### Verification
+All endpoints tested via curl.exe and confirmed working:
+```bash
+curl.exe -s http://localhost:8000/api/entities/expiring?days=30
+# Returns: 2 banks (BNK-1234, BNK-5678) with expiring certs
+
+curl.exe -s http://localhost:8000/api/entities/BNK-1234/risk
+# Returns: {"risk_score": 40, "risk_level": "medium", "factors": {...}}
+
+curl.exe -s http://localhost:8000/api/entities/daily-check
+# Returns: {"entities_checked": 6, "at_risk_found": 2, "non_compliant_found": 0}
+```
+
+### Files Created/Modified
+- `backend/agents/ecosystem_tracker.py` [NEW] - 340 lines
+- `backend/routes/entities.py` [MODIFIED] - Extended with Agent 2 endpoints
+- `backend/agents/__init__.py` [MODIFIED] - Added optional imports
+
+### Handoff Notes for Next Agent
+- **Agent 2 complete**: All 5 tools from spec implemented
+- **Endpoints live**: Auto-reloaded on running backend (:8000)
+- **Risk scoring**: Uses 5 factors (certification, violations, anomalies, jurisdiction, relationship)
+- **Expiring certs**: BNK-1234 (10 days) and BNK-5678 (17 days) flagged
+
+---
+
+## Session Log
+Date: 2026-01-05 05:50
+Agent: Agent 1 (Regulatory Intelligence)
+Conversation ID: 1f4f8c96-e552-4a0f-b0b2-de6911cfa8c1
+
+### Context Documents Used
+- [x] AGENT_COORDINATION.md - Referenced: MVP scope, file ownership
+- [x] AGENT_IMPLEMENTATION_CONTEXT.md - Agent 1 spec
+- [x] reference_repo/logic_specs/agent_1_regulatory.txt - Full logic spec
+
+### Work Completed
+- [x] Created `agents/regulatory_monitor.py` - RegulatoryMonitor class
+- [x] Created `routes/regulations.py` - 6 API endpoints
+- [x] Updated `agents/__init__.py` with RegulatoryMonitor export
+- [x] Updated `main.py` to include regulations router
+- [x] Tested all endpoints via curl.exe
+
+### Files Created
+- `backend/agents/regulatory_monitor.py` - Mock sources, 4 regulations, change detection, impact analysis
+- `backend/routes/regulations.py` - List, detail, impact, check-updates, sources, stats endpoints
+
+### Endpoints Verified
+- `GET /api/regulations` - Lists 4 regulations
+- `GET /api/regulations/{id}` - Returns full regulation with obligations
+- `GET /api/regulations/{id}/impact` - Returns affected entities + urgency
+- `POST /api/regulations/check-updates` - Scans all sources, returns alerts
+
+### Handoff Notes
+- **Agent 1 complete**: All endpoints working on :8000
+- **Mock data**: 4 regulations (GDPR, RBI, PCI, CCPA), 5 sources
+- **Impact analysis**: Links regulations to affected entities from mock_data
+
+---
+
+## Session Log
+Date: 2026-01-05 06:03
+Agent: Agent 5 (Evidence & Reporting Engine)
+Conversation ID: 38322c49-7c26-4223-8054-e5ff63e01dbc
+
+### Context Documents Used
+- [x] AGENT_COORDINATION.md - Referenced: MVP scope, file ownership
+- [x] reference_repo/logic_specs/agent_5_reporting.txt - Full logic spec
+
+### Work Completed
+- [x] Created `agents/evidence_engine.py` - EvidenceEngine class (~450 lines)
+  - `compile_evidence_package()` - Audit-ready packages with checksum
+  - `generate_regulatory_report()` - PCI-DSS, GDPR, SOC2, RBI templates
+  - `create_grc_case()` - GRC case creation with SLA tracking
+  - `update_remediation_status()` - State machine for case lifecycle
+  - `list_grc_cases()` - Filtered case listing
+  - `export_data()` - JSON/CSV exports
+- [x] Created `routes/reports.py` - 13 API endpoints
+- [x] Updated `main.py` to register reports router
+
+### Endpoints Verified
+```bash
+POST /api/reports/generate     # PCI-DSS report generated
+POST /api/reports/evidence     # Evidence package EVD-2026-001 created
+POST /api/reports/cases        # GRC case GRC-2026-00001 created
+GET  /api/reports/cases/summary # Summary with SLA tracking
+GET  /api/reports/frameworks   # Lists 4 framework templates
+```
+
+### Files Created/Modified
+- `backend/agents/evidence_engine.py` [NEW] - ~450 lines
+- `backend/routes/reports.py` [NEW] - 13 endpoints
+- `backend/main.py` [MODIFIED] - Added reports router
+
+### Handoff Notes
+- **Agent 5 complete**: All 6 tools from spec implemented
+- **Backend running**: on :8000 with all 5 agents
+- **GRC workflow**: Full state machine (open → investigating → in_progress → pending_review → completed)
+- **SLA tracking**: Critical=4h, High=24h, Medium=72h, Low=7d
+
+### MVP STATUS UPDATE
+- **All 5 Agents Complete**: Transaction, Ecosystem, Regulatory, Jurisdiction, Reporting
+- P2 items (Agent 4, 5) now P0 complete ✅
+---
+
+## Session Log
+Date: 2026-01-05 05:50
+Agent: Agent 4 (Cross-Jurisdiction Analyzer)
+Conversation ID: 8a757cd3-cd80-4f1a-b06a-e926c23a2a3d
+
+### Context Documents Used
+- [x] AGENT_COORDINATION.md - Referenced: MVP scope, session logs
+- [x] AGENT_IMPLEMENTATION_CONTEXT.md - Agent 4 specs and requirements
+- [x] reference_repo/logic_specs/agent_4_jurisdiction.txt - Full logic spec
+
+### What Was Helpful
+- Agent 3 (transaction_monitor.py) as reference pattern
+- Existing mock data structure for consistency
+
+### Work Completed
+- [x] Created `agents/cross_jurisdiction.py` - CrossJurisdictionAnalyzer class
+- [x] Created `routes/jurisdiction.py` - 6 API endpoints
+- [x] Updated `agents/__init__.py` - Added export
+- [x] Updated `main.py` - Registered router
+
+### Files Created/Modified
+- `backend/agents/cross_jurisdiction.py` - Full analyzer with:
+  - Jurisdiction → Regulation mapping (EU, US, IN, SG, UK, JP, BR, CN, RU, AU)
+  - Data localization checks (IN, RU, CN have strict requirements)
+  - EU adequacy decision tracking
+  - 4 known regulatory conflicts
+  - Transaction analysis with compliance guidance
+- `backend/routes/jurisdiction.py` - 6 endpoints
+
+### Endpoints Verified
+- `GET /api/jurisdiction/demo` - Demo DE→SG→US transaction
+- `POST /api/jurisdiction/analyze` - Full transaction analysis
+- `GET /api/jurisdiction/check-data-flow?origin=X&destination=Y` - Data flow check
+- `GET /api/jurisdiction/conflicts` - 4 known conflicts
+- `GET /api/jurisdiction/summary/{country}` - Country regulatory summary
+- `GET /api/jurisdiction/regions` - All supported regions
+
+### Handoff Notes
+- **Agent 4 complete**: All endpoints working on :8000
+- **No new servers started**: Used existing backend with --reload
+- **Key features**: Cross-border analysis, GDPR/SCCs guidance, conflict detection
