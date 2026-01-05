@@ -52,16 +52,29 @@
     - [ ] Ensure `pgvector` extension is enabled for Agent 1 rules
 
 ### 🎥 To: Verification Agent
-**Objective:** Record "Day in the Life" demo video proving system functionality.
-1.  **Prerequisites:** Ensure SQL Agent has finished and server is running.
-2.  **Recording:** Use Browser Tool (actions are auto-recorded).
-3.  **Script:**
-    - [ ] **Dashboard:** Show high-level metrics & 2D Heatmap.
-    - [ ] **Alerts:** Click into a Critical Alert (PAN Leak).
-    - [ ] **Chat:** Ask "What regulations affect this transaction?".
-    - [ ] **Entities:** Show expiring certificates status.
-    - [ ] **Resolution:** Resolve the alert and show dashboard update.
-4.  **Artifact:** Create `walkthrough.md` embedding the recorded videos.
+**Objective:** Perform EXHAUSTIVE testing and record "Day in the Life" demo.
+
+**1. Exhaustive Functional Testing (Do this FIRST):**
+- [ ] **Navigation**: Click EVERY link in sidebar/header. Verify no 404s.
+- [ ] **Agent 1 (Regs)**: Filter regulations by Region (EU/US). Verify count changes.
+- [ ] **Agent 2 (Entities)**: Check `BNK-1234` (Expiring) vs `BNK-5678`. Verify badges.
+- [ ] **Agent 3 (Heatmap)**: Hover over heatmap cells. Verify tooltips data matches grid.
+- [ ] **Agent 4 (Jurisdiction)**: Test `DE -> US` (Flagged) vs `DE -> FR` (Clean).
+- [ ] **Agent 5 (Reports)**: Generate a report. specificically check `/api/reports/cases`.
+- [ ] **Responsiveness**: Resize window to mobile width (`375px`). Verify layout stacks.
+- [ ] **Error Handling**: Try a bad URL (`/bad-page`). Verify 404 UI.
+
+**2. "Day in the Life" Demo Recording:**
+*Once testing passes, record the clean demo flow:*
+- [ ] **Dashboard**: Show high-level metrics & 2D Heatmap.
+- [ ] **Alerts**: Click into a Critical Alert (PAN Leak).
+- [ ] **Chat**: Ask "What regulations affect this transaction?".
+- [ ] **Entities**: Show expiring certificates status.
+- [ ] **Resolution**: Resolve the alert and show dashboard update.
+
+**3. Artifacts:**
+- `test_report.md`: Pass/Fail log of exhaustive tests.
+- `walkthrough.md`: The demo video + narrative.
 
 ### ⚠️ IMPORTANT: RESOURCE LOCKING
 - Check `RESOURCE_LOCKS.md` before restarting servers.
