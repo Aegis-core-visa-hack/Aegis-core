@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import dashboard, alerts, entities, chat, demo
+from routes import dashboard, alerts, entities, chat, demo, regulations, jurisdiction
 
 # Load environment variables
 load_dotenv()
@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     print("[AEGIS] Alerts API: /api/alerts")
     print("[AEGIS] Entities API: /api/entities")
     print("[AEGIS] Chat API: /api/chat")
+    print("[AEGIS] Regulations API: /api/regulations")  # Agent 1
     yield
     print("[AEGIS] Backend shutting down...")
 
@@ -53,6 +54,8 @@ app.include_router(alerts.router)
 app.include_router(entities.router)
 app.include_router(chat.router)
 app.include_router(demo.router)
+app.include_router(jurisdiction.router)
+app.include_router(regulations.router)
 
 
 @app.get("/")

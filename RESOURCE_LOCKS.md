@@ -2,17 +2,19 @@
 ## Self-Check Before Using Shared Resources
 
 > **PROTOCOL:** Before using a resource, check this file. Update when you start/stop using.
+> **LAST VERIFIED:** 2026-01-05 05:45 IST by Coordinator
 
 ---
 
 ## 🖥️ SERVERS
 
-| Resource | Port | Status | Locked By | Since |
-|----------|------|--------|-----------|-------|
-| Frontend | 3000 | 🟢 RUNNING | System | 05:19 IST |
-| Backend | 8000 | 🟢 RUNNING | System | 05:34 IST |
+| Resource | Port | Status | Verified | Notes |
+|----------|------|--------|----------|-------|
+| Frontend | 3000 | 🟢 RUNNING | 05:45 | `npm run dev` |
+| Backend | 8000 | 🟢 RUNNING | 05:45 | Tested: `/api/dashboard/summary` returns data |
 
-**Note:** Servers auto-reload on file changes. No need to restart.
+**⚠️ WARNING:** Multiple uvicorn processes detected. Only first one works.
+Extras should be terminated to avoid confusion.
 
 ---
 

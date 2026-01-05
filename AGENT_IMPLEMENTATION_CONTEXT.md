@@ -22,13 +22,33 @@ Backend:  http://localhost:8000 (ALREADY RUNNING - don't restart)
 ### For Your Testing
 ```bash
 # ✅ DO: Use curl to test your endpoints
-curl http://localhost:8000/api/your-endpoint
+curl.exe http://localhost:8000/api/your-endpoint
 
 # ✅ DO: Check Swagger UI
 # Open http://localhost:8000/docs in browser
 
 # ❌ DON'T: Start new server instances
 # ❌ DON'T: Run `npm run dev` or `uvicorn` commands
+```
+
+### 🔍 SELF-CHECK: Verify Servers Are Running
+```bash
+# Check backend (should return JSON):
+curl.exe -s http://localhost:8000/api/dashboard/summary
+
+# Check frontend (should return HTML):
+curl.exe -s http://localhost:3000 | head -5
+
+# If either fails: Ask Coordinator to restart servers
+```
+
+### 🔍 SELF-CHECK: Verify Your New Endpoint Works
+```bash
+# After adding your route, test it:
+curl.exe -s http://localhost:8000/api/YOUR-ROUTE
+
+# Check Swagger for new endpoints:
+# Open http://localhost:8000/docs - your endpoint should appear
 ```
 
 ### If Server Is Down
