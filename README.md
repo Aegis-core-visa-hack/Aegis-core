@@ -28,7 +28,7 @@ Financial services operate in a dynamic regulatory environment:
 
 > ⚠️ **Terminology Note**: This project contains two distinct concepts of "agents":
 > - **AEGIS Compliance Agents** (5 specialized AI agents) - The core product that monitors compliance
-> - **AI Coding Assistants** (Anthropic Claude, v0) - Tools used during development via platforms like Cursor/Windsurf to accelerate implementation
+> - **AI Coding Assistants** (Anthropic Claude) - Tools used during development via platforms like antigravity to accelerate implementation
 >
 > This README focuses on the **AEGIS Compliance Agents** - the product we built. 
 
@@ -204,7 +204,7 @@ This was a collaborative hackathon project with work split across two repositori
 ## 📚 Documentation
 
 - [Architecture Document](./ARCHITECTURE.md) - Comprehensive technical design
-- [Agent Coordination](./AGENT_COORDINATION.md) - How compliance agents communicate
+- [Agent Coordination](./AGENT_COORDINATION.md) - How devlopment agents communicate & maintain context
 - [UI Context](./UI_CONTEXT.md) - Frontend design specifications
 
 ---
